@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+  <name>Incident Count Multiplier (Continued)</name>
+  	<packageId>Mlie.IncidentCountMultiplier</packageId>
+	<author>mlph</author>
+	<url>https://github.com/emipa606/IncidentCountMultiplier</url>
+	<supportedVersions>
+		<li>1.0</li>
+		<li>1.1</li>
+	</supportedVersions>
+	<modDependencies />
+	<loadAfter />
+	<description>Update of Honey Badgers mod for RimWorld 1.1
+https://steamcommunity.com/sharedfiles/filedetails/?id=1760656500
+
+[img]https://raw.githubusercontent.com/emipa606/RimWorld-Wrapper/master/Notice.png[/img]
+
+Support-chat:
+https://invite.gg/mlie
+
+Non-steam version:
+https://github.com/emipa606/IncidentCountMultiplier
+	
+--- Original Description ---
+Multiply the frequency of random incidents caused by Storytellers.
+Multiplier rate can be set to fluctuate according to elapsed days.
+
+This mod uses Harmony.
+
+
+Adding and removing this mod may be safe.
+Setting to extreme value(x100 for example) may output error. but it seems to work.</description>
+</ModMetaData>
