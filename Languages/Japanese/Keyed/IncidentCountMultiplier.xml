@@ -1,10 +1,9 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-
-    <IncidentCountMultiplier>ランダムイベント発生頻度の倍率</IncidentCountMultiplier>
-    <!-- <IncidentCountMultiplier_ToolTip></IncidentCountMultiplier_ToolTip> -->
-    <!-- xをゲーム内日数、yを倍率としたSimpleCurveです。SimpleCurveの説明だれかかわりにして -->
-    <!-- 説明めんどいからサンプルを見て察していただくスタイルに -->
-    <IncidentCountMultiplierDescription>ストーリーテラーによって引き起こされるランダムイベントの頻度を変更できます.
+  <IncidentCountMultiplier>ランダムイベント発生頻度の倍率</IncidentCountMultiplier>
+  <!-- <IncidentCountMultiplier_ToolTip></IncidentCountMultiplier_ToolTip> -->
+  <!-- xをゲーム内日数、yを倍率としたSimpleCurveです。SimpleCurveの説明だれかかわりにして -->
+  <!-- 説明めんどいからサンプルを見て察していただくスタイルに -->
+  <IncidentCountMultiplierDescription>ストーリーテラーによって引き起こされるランダムイベントの頻度を変更できます.
 倍率は,ゲーム内の経過日数に応じて変動するように設定できます.</IncidentCountMultiplierDescription>
 </LanguageData>

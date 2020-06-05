@@ -100,7 +100,7 @@ namespace IncidentCountMultiplier
             Rect rect = listing_Standard.GetRect(250);
             SimpleCurveDrawer.DrawCurve(rect, new SimpleCurveDrawInfo {
                 curve = settings.MTBEventOccurs_Multiplier,
-                labelY = "Multiplier"
+                label = "Multiplier"
             }, style);
 
 

@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LanguageData>
-
-    <IncidentCountMultiplier>Incident frequency multiplier</IncidentCountMultiplier>
-    <!-- <IncidentCountMultiplier_ToolTip>Simple Curve. x is days and y is multiplier.</IncidentCountMultiplier_ToolTip> -->
-    <IncidentCountMultiplierDescription>Multiply the freqency of random incidents caused by Storytellers.
+  <IncidentCountMultiplier>Incident frequency multiplier</IncidentCountMultiplier>
+  <!-- <IncidentCountMultiplier_ToolTip>Simple Curve. x is days and y is multiplier.</IncidentCountMultiplier_ToolTip> -->
+  <IncidentCountMultiplierDescription>Multiply the freqency of random incidents caused by Storytellers.
 Multiplier rate can be set to fluctuate according to elapsed days.</IncidentCountMultiplierDescription>
+
 </LanguageData>
