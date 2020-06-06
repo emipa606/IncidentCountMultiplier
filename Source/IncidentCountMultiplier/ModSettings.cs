@@ -64,6 +64,19 @@ namespace IncidentCountMultiplier
             //SimpleCurveEditor(listing_Standard, ref settings.IncidentCycleAcceleration);
             //listing_Standard.GapLine();
 
+
+            style.FixedScale = new Vector2(0, settings.MTBEventOccurs_Multiplier.View.rect.yMax);
+            style.FixedSection = new FloatRange(0, settings.MTBEventOccurs_Multiplier.View.rect.xMax);
+            listing_Standard.GapLine(24);
+
+
+            Rect rect = listing_Standard.GetRect(250);
+            SimpleCurveDrawer.DrawCurve(rect, new SimpleCurveDrawInfo
+            {
+                curve = settings.MTBEventOccurs_Multiplier,
+                label = "Multiplier"
+            }, style);
+
             listing_Standard.Label("Sample Preset");
             if (listing_Standard.ButtonText("200%"))
             {
@@ -91,18 +104,17 @@ namespace IncidentCountMultiplier
                 };
             }
 
-            listing_Standard.GapLine(24);
-
-            style.FixedScale = new Vector2(0, settings.MTBEventOccurs_Multiplier.View.rect.yMax);
-            style.FixedSection = new FloatRange(0, settings.MTBEventOccurs_Multiplier.View.rect.xMax);
-
-
-            Rect rect = listing_Standard.GetRect(250);
-            SimpleCurveDrawer.DrawCurve(rect, new SimpleCurveDrawInfo {
-                curve = settings.MTBEventOccurs_Multiplier,
-                label = "Multiplier"
-            }, style);
-
+            if (listing_Standard.ButtonText("50%(year 0) -> 100%(year 1) -> 200%(year 2) -> 350%(year 3) -> 500%(year 4)"))
+            {
+                settings.MTBEventOccurs_Multiplier = new SimpleCurve
+                {
+                    { 0, 0.5f },
+                    { 60, 1f },
+                    { 120, 2f },
+                    { 180, 3.5f },
+                    { 240, 5f }
+                };
+            }
 
             listing_Standard.End();
             ViewRectHeight = listing_Standard.CurHeight;
@@ -125,6 +137,7 @@ namespace IncidentCountMultiplier
 
         private void SimpleCurveEditor(Listing_Standard listing_Standard, ref SimpleCurve curve, float min = 0f, float max = 1E+09f)
         {
+            float lastx = 0;
             for (int num = 0; num < curve.PointsCount; num++)
             {
                 CurvePoint point = curve.Points[num];
@@ -146,12 +159,22 @@ namespace IncidentCountMultiplier
                 };
 
                 float x = point.x;
-                string buffer1 = x.ToString();
-                Widgets.TextFieldNumeric<float>(rect1, ref x, ref buffer1, min, max);
+                if(x <= lastx) { x = lastx + 1f; }
+                //string buffer2 = x.ToString();
+                x = Widgets.HorizontalSlider(rect1, x, 0, 5000f, false, "DaysDescription".Translate() + ": " + x, null, null, 1);
+                //listing_Standard.Label("DaysDescription".Translate() + ": " + x);
+                //listing_Standard.Slider(x, 0, 10000f);
+                //Widgets.TextFieldNumeric<float>(rect2, ref y, ref buffer2, min, max);
+                
 
                 float y = point.y;
-                string buffer2 = y.ToString();
-                Widgets.TextFieldNumeric<float>(rect2, ref y, ref buffer2, min, max);
+                float ypercent = y * 100;
+                //string buffer1 = y.ToString();
+                ypercent = Widgets.HorizontalSlider(rect2, ypercent, 0, 10000f, false, "PercentDescription".Translate() + ": " + ypercent + "%", null, null, 1);
+                //listing_Standard.Label("PercentDescription".Translate() + ": " + ypercent + "%");
+                //listing_Standard.Slider(ypercent, 0, 1000f);
+                y = ypercent / 100;
+                //Widgets.TextFieldNumeric<float>(rect1, ref x, ref buffer1, min, max);
 
                 if (x != point.x || y != point.y)
                 {
@@ -176,6 +199,7 @@ namespace IncidentCountMultiplier
                 }
 
                 listing_Standard.Gap(listing_Standard.verticalSpacing);
+                lastx = x;
             }
         }
 
