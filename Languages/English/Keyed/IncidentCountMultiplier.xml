@@ -6,5 +6,4 @@
   <!-- <IncidentCountMultiplier_ToolTip>Simple Curve. x is days and y is multiplier.</IncidentCountMultiplier_ToolTip> -->
   <IncidentCountMultiplierDescription>Multiply the freqency of random incidents caused by Storytellers.
 Multiplier rate can be set to fluctuate according to elapsed days.</IncidentCountMultiplierDescription>
-
 </LanguageData>

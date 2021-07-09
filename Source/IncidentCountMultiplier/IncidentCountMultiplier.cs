@@ -1,150 +1,216 @@
-﻿using HarmonyLib;
-using RimWorld;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
-using System.Text;
+﻿using UnityEngine;
 using Verse;
 
 namespace IncidentCountMultiplier
 {
-    [StaticConstructorOnStartup]
-    public static class IncidentCountMultiplier_Harmony
+    public class IncidentCountMultiplier : Mod
     {
-        //いつもの
-        public static Harmony harmony;
-        static IncidentCountMultiplier_Harmony()
+        private static readonly SimpleCurveDrawerStyle style = new SimpleCurveDrawerStyle
         {
-            harmony = new Harmony("IncidentCountMultiplier");
-            //harmony.PatchAll();
+            LabelX = "day",
+            DrawCurveMousePoint = true,
+            DrawMeasures = true,
+            UseFixedScale = true,
+            UseFixedSection = true,
+            YIntegersOnly = true,
+            XIntegersOnly = true,
+            MeasureLabelsXCount = 6
+        };
+
+        private Vector2 scrollPosition = new Vector2(0f, 0f);
+
+        public IncidentCountMultiplierSettings settings;
+
+        public IncidentCountMultiplier(ModContentPack content) : base(content)
+        {
+            settings = GetSettings<IncidentCountMultiplierSettings>();
         }
-    }
 
-    [StaticConstructorOnStartup]
-    public static class Patches
-    {
-        //ログ用
-        private static StringBuilder stringBuilder;
+        private static float ViewRectHeight { get; set; }
 
-        private static IncidentCountMultiplierSettings settings = LoadedModManager.GetMod(typeof(IncidentCountMultiplier)).GetSettings<IncidentCountMultiplierSettings>();
-
-        static Patches()
+        public override void DoSettingsWindowContents(Rect inRect)
         {
-            Harmony harmony = IncidentCountMultiplier_Harmony.harmony;
+            var viewRect = new Rect(0, 0, inRect.width - 30, ViewRectHeight);
+            Widgets.BeginScrollView(inRect, ref scrollPosition, viewRect);
 
-            stringBuilder = new StringBuilder();
-            stringBuilder.Append("Harmony Patches by IncidentCountMultiplier\n\n");
+            var viewRect2 = new Rect(0, 0, viewRect.width, 99999);
 
-            IEnumerable<Type> storytellerComps = GenTypes.AllSubclassesNonAbstract(typeof(StorytellerComp));
-
-            foreach (Type comp in storytellerComps)
+            var listing_Standard = new Listing_Standard
             {
-                //MakeIntervalIncidentsメソッドのyield return用に作られた内部クラス
-                Type innerclass = comp.GetNestedTypes(AccessTools.all).FirstOrDefault(x => x.Name.Contains("MakeIntervalIncidents"));
-                if (innerclass != null)
+                ColumnWidth = (float) (viewRect.width - 10.0)
+            };
+            listing_Standard.Begin(viewRect2);
+
+            listing_Standard.Label("IncidentCountMultiplierDescription".Translate());
+
+            listing_Standard.GapLine(24);
+
+            //listing_Standard.Label("IncidentCountMultiplier".Translate(), -1, "IncidentCountMultiplier_ToolTip".Translate());
+            listing_Standard.Label("IncidentCountMultiplier".Translate());
+            SimpleCurveEditor(listing_Standard, ref settings.MTBEventOccurs_Multiplier);
+            listing_Standard.GapLine();
+
+            //listing_Standard.Label("MinIncidentCountMultiplier".Translate());
+            //SimpleCurveEditor(listing_Standard, ref settings.MinIncidentCountMultiplier);
+            //listing_Standard.GapLine();
+
+            //listing_Standard.Label("MaxIncidentCountMultiplier".Translate());
+            //SimpleCurveEditor(listing_Standard, ref settings.MaxIncidentCountMultiplier);
+            //listing_Standard.GapLine();
+
+            //listing_Standard.Label("IncidentCycleAcceleration".Translate());
+            //SimpleCurveEditor(listing_Standard, ref settings.IncidentCycleAcceleration);
+            //listing_Standard.GapLine();
+
+
+            style.FixedScale = new Vector2(0, settings.MTBEventOccurs_Multiplier.View.rect.yMax);
+            style.FixedSection = new FloatRange(0, settings.MTBEventOccurs_Multiplier.View.rect.xMax);
+            listing_Standard.GapLine(24);
+
+
+            var rect = listing_Standard.GetRect(250);
+            SimpleCurveDrawer.DrawCurve(rect, new SimpleCurveDrawInfo
+            {
+                curve = settings.MTBEventOccurs_Multiplier,
+                label = "Multiplier"
+            }, style);
+
+            listing_Standard.Label("Sample Preset");
+            if (listing_Standard.ButtonText("200%"))
+            {
+                settings.MTBEventOccurs_Multiplier = new SimpleCurve {{0, 2}};
+            }
+
+            if (listing_Standard.ButtonText("50%"))
+            {
+                settings.MTBEventOccurs_Multiplier = new SimpleCurve {{0, 0.5f}};
+            }
+
+            if (listing_Standard.ButtonText("100%(year 0) -> 300%(year 10)"))
+            {
+                settings.MTBEventOccurs_Multiplier = new SimpleCurve
                 {
-                    stringBuilder.Append(innerclass.ToString());
-                    MethodInfo original = AccessTools.Method(innerclass, "MoveNext");
-                    HarmonyMethod transpiler = new HarmonyMethod(typeof(Patches), nameof(Patches.Transpiler));
-                    harmony.Patch(original, null, null, transpiler);
+                    {0, 1},
+                    {600, 3}
+                };
+            }
+
+            if (listing_Standard.ButtonText("150%(year 0) -> 150%(year 1.5) -> 220%(year 4) -> 300%(year 10)"))
+            {
+                settings.MTBEventOccurs_Multiplier = new SimpleCurve
+                {
+                    {90, 1.5f},
+                    {240, 2.2f},
+                    {600, 3}
+                };
+            }
+
+            if (listing_Standard.ButtonText(
+                "50%(year 0) -> 100%(year 1) -> 200%(year 2) -> 350%(year 3) -> 500%(year 4)"))
+            {
+                settings.MTBEventOccurs_Multiplier = new SimpleCurve
+                {
+                    {0, 0.5f},
+                    {60, 1f},
+                    {120, 2f},
+                    {180, 3.5f},
+                    {240, 5f}
+                };
+            }
+
+            listing_Standard.End();
+            ViewRectHeight = listing_Standard.CurHeight;
+            Widgets.EndScrollView();
+        }
+
+        public override string SettingsCategory()
+        {
+            return "Incident Count Multiplier";
+        }
+
+        public override void WriteSettings()
+        {
+            settings.MTBEventOccurs_Multiplier.SortPoints();
+            //settings.MinIncidentCountMultiplier.SortPoints();
+            //settings.MaxIncidentCountMultiplier.SortPoints();
+            //settings.IncidentCycleAcceleration.SortPoints();
+            base.WriteSettings();
+        }
+
+        private void SimpleCurveEditor(Listing_Standard listing_Standard, ref SimpleCurve curve)
+        {
+            float lastx = 0;
+            for (var num = 0; num < curve.PointsCount; num++)
+            {
+                var point = curve.Points[num];
+
+                var rect1 = listing_Standard.GetRect(Text.LineHeight);
+                rect1.width = (rect1.width - 55) / 2;
+                var rect2 = new Rect(rect1)
+                {
+                    x = rect1.xMax + 5
+                };
+                var rect3 = new Rect(rect1)
+                {
+                    width = 20,
+                    x = rect2.xMax + 5
+                };
+                var rect4 = new Rect(rect3)
+                {
+                    x = rect3.xMax + 5
+                };
+
+                var x = point.x;
+                if (x <= lastx)
+                {
+                    x = lastx + 1f;
                 }
-                else
+
+                //string buffer2 = x.ToString();
+                x = Widgets.HorizontalSlider(rect1, x, 0, 5000f, false, "DaysDescription".Translate() + ": " + x, null,
+                    null, 1);
+                //listing_Standard.Label("DaysDescription".Translate() + ": " + x);
+                //listing_Standard.Slider(x, 0, 10000f);
+                //Widgets.TextFieldNumeric<float>(rect2, ref y, ref buffer2, min, max);
+
+
+                var y = point.y;
+                var ypercent = y * 100;
+                //string buffer1 = y.ToString();
+                ypercent = Widgets.HorizontalSlider(rect2, ypercent, 0, 10000f, false,
+                    "PercentDescription".Translate() + ": " + ypercent + "%", null, null, 1);
+                //listing_Standard.Label("PercentDescription".Translate() + ": " + ypercent + "%");
+                //listing_Standard.Slider(ypercent, 0, 1000f);
+                y = ypercent / 100;
+                //Widgets.TextFieldNumeric<float>(rect1, ref x, ref buffer1, min, max);
+
+                if (x != point.x || y != point.y)
                 {
-                    stringBuilder.Append(string.Concat(new object[]
+                    curve.Points[num] = new CurvePoint(x, y);
+                    curve.View.SetViewRectAround(curve);
+                }
+
+                if (Widgets.ButtonText(rect3, "+"))
+                {
+                    curve.Add(new CurvePoint(point));
+                    curve.View.SetViewRectAround(curve);
+                }
+
+                if (Widgets.ButtonText(rect4, "-"))
+                {
+                    //curves.RemovePointNear(point);
+                    curve.Points.RemoveAt(num);
+                    if (curve.PointsCount == 0)
                     {
-                        comp,
-                        " is not patched. Target method is not found."
-                    }));
+                        curve.Add(0, 1);
+                    }
+
+                    curve.View.SetViewRectAround(curve);
                 }
-                stringBuilder.AppendLine();
-            }
-            if (true)
-            {
-                Log.Message(stringBuilder.ToString());
-            }
-        }
 
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-        {
-            if (instructions.Any(x => x.opcode == OpCodes.Call && x.operand is MethodInfo method && method.Name == "MTBEventOccurs"))
-            {
-                //大部分の、呼ばれるたびに確率でインシデントを起こすタイプ
-                stringBuilder.Append(" is patched.\nMethod 'MTBEventOccurs' is replaced.");
-                return instructions.MethodReplacer_MTBEventOccurs();
+                listing_Standard.Gap(listing_Standard.verticalSpacing);
+                lastx = x;
             }
-            else if (instructions.Any(x => x.opcode == OpCodes.Call && x.operand is MethodInfo method && method.Name == "IncidentCountThisInterval"))
-            {
-                //OnOffCycleなど、一定期間のうちに規定数のインシデントを起こすタイプ
-                stringBuilder.Append(" is patched.\nMethod 'IncidentCountThisInterval' is replaced.");
-                return instructions.MethodReplacer_IncidentCountThisInterval();
-            }
-            else
-            {
-                //JournyOfferなど、ランダム性のないやつ
-                stringBuilder.Append(" is not patched.\n");
-                return instructions;
-            }
-        }
-
-        private static float Multiplier { get => settings.MTBEventOccurs_Multiplier.EvaluateOnCurrentDay(); }
-
-        private static bool MTBEventOccurs_Patch(float mtb, float mtbUnit, float checkDuration)
-        {
-            // mtb/= と実質一緒
-
-            //checkDuration *= settings.MTBEventOccurs_Multiplier.EvaluateOnCurrentDay();
-            if(Multiplier == 0)
-            {
-                return false;
-            }
-            checkDuration *= Multiplier;
-            return Rand.MTBEventOccurs(mtb, mtbUnit, checkDuration);
-        }
-
-        private static int IncidentCountThisInterval_Patch(IIncidentTarget target, int randSeedSalt, float minDaysPassed, float onDays, float offDays, float minSpacingDays, float minIncidents, float maxIncidents, float acceptFraction = 1f)
-        {
-            //minIncidents *= settings.MinIncidentCountMultiplier.EvaluateOnCurrentDay();
-            //maxIncidents *= settings.MaxIncidentCountMultiplier.EvaluateOnCurrentDay();
-            //float IncidentCycleAcceleration = settings.IncidentCycleAcceleration.EvaluateOnCurrentDay();
-            //onDays *= IncidentCycleAcceleration;
-            //offDays *= IncidentCycleAcceleration;
-            //minSpacingDays /= settings.MaxIncidentCountMultiplier.EvaluateOnCurrentDay();
-            minIncidents *= Multiplier;
-            maxIncidents *= Multiplier;
-            if (Multiplier <= 0.5)
-            {
-                minSpacingDays /= 0.5f;
-            }
-            else
-            {
-                minSpacingDays /= Multiplier;
-            }
-            return IncidentCycleUtility.IncidentCountThisInterval(target, randSeedSalt, minDaysPassed, onDays, offDays, minSpacingDays, minIncidents, maxIncidents, acceptFraction);
-        }
-
-        private static IEnumerable<CodeInstruction> MethodReplacer_MTBEventOccurs(this IEnumerable<CodeInstruction> instructions)
-        {
-            return instructions.MethodReplacer(
-                AccessTools.Method(typeof(Rand), nameof(Rand.MTBEventOccurs)),
-                AccessTools.Method(typeof(Patches), nameof(Patches.MTBEventOccurs_Patch))
-                );
-        }
-
-        private static IEnumerable<CodeInstruction> MethodReplacer_IncidentCountThisInterval(this IEnumerable<CodeInstruction> instructions)
-        {
-            return instructions.MethodReplacer(
-                AccessTools.Method(typeof(IncidentCycleUtility), nameof(IncidentCycleUtility.IncidentCountThisInterval)),
-                AccessTools.Method(typeof(Patches), nameof(Patches.IncidentCountThisInterval_Patch))
-                );
-        }
-
-        private static float EvaluateOnCurrentDay(this SimpleCurve simpleCurve)
-        {
-            return simpleCurve.Evaluate(Find.TickManager.TicksGame / 60000);
         }
     }
-
-
 }
