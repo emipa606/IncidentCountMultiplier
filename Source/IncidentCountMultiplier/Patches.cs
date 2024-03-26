@@ -42,11 +42,10 @@ public static class Patches
             }
             else
             {
-                stringBuilder.Append(string.Concat(new object[]
-                {
+                stringBuilder.Append(string.Concat([
                     comp,
                     " is not patched. Target method is not found."
-                }));
+                ]));
             }
 
             stringBuilder.AppendLine();

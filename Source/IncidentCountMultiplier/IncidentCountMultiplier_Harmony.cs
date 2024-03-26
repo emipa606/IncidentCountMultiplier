@@ -7,7 +7,7 @@ namespace IncidentCountMultiplier;
 public static class IncidentCountMultiplier_Harmony
 {
     //いつもの
-    public static Harmony harmony;
+    public static readonly Harmony harmony;
 
     static IncidentCountMultiplier_Harmony()
     {

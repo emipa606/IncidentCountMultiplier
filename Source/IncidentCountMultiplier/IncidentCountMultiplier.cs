@@ -28,8 +28,7 @@ public class IncidentCountMultiplier : Mod
     {
         settings = GetSettings<IncidentCountMultiplierSettings>();
         currentVersion =
-            VersionFromManifest.GetVersionFromModMetaData(
-                ModLister.GetActiveModWithIdentifier("Mlie.IncidentCountMultiplier"));
+            VersionFromManifest.GetVersionFromModMetaData(content.ModMetaData);
     }
 
     private static float ViewRectHeight { get; set; }
