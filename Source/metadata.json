@@ -2,5 +2,17 @@
   "Continued": true,
   "CanAdd": "0",
   "CanRemove": "0",
-  "PreviewVersion": "1.5"
+  "PreviewVersion": "1.6",
+  "Patches": false,
+  "Defs": false,
+  "Assemblies": true,
+  "LinesOfCode": 13547,
+  "LinesOfXML": 0,
+  "CodeBaseSize": 67,
+  "LastXmlCleaning": "2025-07-22T22:37:25.842367+02:00",
+  "SocialImageSet": true,
+  "SearchTags": [
+    "storyteller",
+    " frequency"
+  ]
 }

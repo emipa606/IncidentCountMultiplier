@@ -6,7 +6,7 @@ namespace IncidentCountMultiplier;
 
 public class IncidentCountMultiplier : Mod
 {
-    private static readonly SimpleCurveDrawerStyle style = new SimpleCurveDrawerStyle
+    private static readonly SimpleCurveDrawerStyle style = new()
     {
         LabelX = "day",
         DrawCurveMousePoint = true,
@@ -20,9 +20,9 @@ public class IncidentCountMultiplier : Mod
 
     private static string currentVersion;
 
-    public readonly IncidentCountMultiplierSettings settings;
+    private readonly IncidentCountMultiplierSettings settings;
 
-    private Vector2 scrollPosition = new Vector2(0f, 0f);
+    private Vector2 scrollPosition = new(0f, 0f);
 
     public IncidentCountMultiplier(ModContentPack content) : base(content)
     {
@@ -40,13 +40,13 @@ public class IncidentCountMultiplier : Mod
 
         var viewRect2 = new Rect(0, 0, viewRect.width, 99999);
 
-        var listing_Standard = new Listing_Standard
+        var listingStandard = new Listing_Standard
         {
             ColumnWidth = (float)(viewRect.width - 10.0)
         };
-        listing_Standard.Begin(viewRect2);
+        listingStandard.Begin(viewRect2);
 
-        var labelPosition = listing_Standard.Label("IncidentCountMultiplierDescription".Translate());
+        var labelPosition = listingStandard.Label("IncidentCountMultiplierDescription".Translate());
         if (currentVersion != null)
         {
             GUI.contentColor = Color.gray;
@@ -57,50 +57,36 @@ public class IncidentCountMultiplier : Mod
             GUI.contentColor = Color.white;
         }
 
-        listing_Standard.GapLine(24);
+        listingStandard.GapLine(24);
 
-        //listing_Standard.Label("IncidentCountMultiplier".Translate(), -1, "IncidentCountMultiplier_ToolTip".Translate());
-        listing_Standard.Label("IncidentCountMultiplier".Translate());
-        SimpleCurveEditor(listing_Standard, ref settings.MTBEventOccurs_Multiplier);
-        listing_Standard.GapLine();
-
-        //listing_Standard.Label("MinIncidentCountMultiplier".Translate());
-        //SimpleCurveEditor(listing_Standard, ref settings.MinIncidentCountMultiplier);
-        //listing_Standard.GapLine();
-
-        //listing_Standard.Label("MaxIncidentCountMultiplier".Translate());
-        //SimpleCurveEditor(listing_Standard, ref settings.MaxIncidentCountMultiplier);
-        //listing_Standard.GapLine();
-
-        //listing_Standard.Label("IncidentCycleAcceleration".Translate());
-        //SimpleCurveEditor(listing_Standard, ref settings.IncidentCycleAcceleration);
-        //listing_Standard.GapLine();
-
+        listingStandard.Label("IncidentCountMultiplier".Translate());
+        simpleCurveEditor(listingStandard, ref settings.MTBEventOccurs_Multiplier);
+        listingStandard.GapLine();
 
         style.FixedScale = new Vector2(0, settings.MTBEventOccurs_Multiplier.View.rect.yMax);
         style.FixedSection = new FloatRange(0, settings.MTBEventOccurs_Multiplier.View.rect.xMax);
-        listing_Standard.GapLine(24);
+        listingStandard.GapLine(24);
 
 
-        var rect = listing_Standard.GetRect(250);
+        var rect = listingStandard.GetRect(250);
         SimpleCurveDrawer.DrawCurve(rect, new SimpleCurveDrawInfo
         {
             curve = settings.MTBEventOccurs_Multiplier,
             label = "Multiplier"
         }, style);
 
-        listing_Standard.Label("Sample Preset");
-        if (listing_Standard.ButtonText("200%"))
+        listingStandard.Label("Sample Preset");
+        if (listingStandard.ButtonText("200%"))
         {
             settings.MTBEventOccurs_Multiplier = new SimpleCurve { { 0, 2 } };
         }
 
-        if (listing_Standard.ButtonText("50%"))
+        if (listingStandard.ButtonText("50%"))
         {
             settings.MTBEventOccurs_Multiplier = new SimpleCurve { { 0, 0.5f } };
         }
 
-        if (listing_Standard.ButtonText("100%(year 0) -> 300%(year 10)"))
+        if (listingStandard.ButtonText("100%(year 0) -> 300%(year 10)"))
         {
             settings.MTBEventOccurs_Multiplier = new SimpleCurve
             {
@@ -109,7 +95,7 @@ public class IncidentCountMultiplier : Mod
             };
         }
 
-        if (listing_Standard.ButtonText("150%(year 0) -> 150%(year 1.5) -> 220%(year 4) -> 300%(year 10)"))
+        if (listingStandard.ButtonText("150%(year 0) -> 150%(year 1.5) -> 220%(year 4) -> 300%(year 10)"))
         {
             settings.MTBEventOccurs_Multiplier = new SimpleCurve
             {
@@ -119,7 +105,7 @@ public class IncidentCountMultiplier : Mod
             };
         }
 
-        if (listing_Standard.ButtonText(
+        if (listingStandard.ButtonText(
                 "50%(year 0) -> 100%(year 1) -> 200%(year 2) -> 350%(year 3) -> 500%(year 4)"))
         {
             settings.MTBEventOccurs_Multiplier = new SimpleCurve
@@ -132,8 +118,8 @@ public class IncidentCountMultiplier : Mod
             };
         }
 
-        listing_Standard.End();
-        ViewRectHeight = listing_Standard.CurHeight;
+        listingStandard.End();
+        ViewRectHeight = listingStandard.CurHeight;
         Widgets.EndScrollView();
     }
 
@@ -145,15 +131,12 @@ public class IncidentCountMultiplier : Mod
     public override void WriteSettings()
     {
         settings.MTBEventOccurs_Multiplier.SortPoints();
-        //settings.MinIncidentCountMultiplier.SortPoints();
-        //settings.MaxIncidentCountMultiplier.SortPoints();
-        //settings.IncidentCycleAcceleration.SortPoints();
         base.WriteSettings();
     }
 
-    private void SimpleCurveEditor(Listing_Standard listing_Standard, ref SimpleCurve curve)
+    private static void simpleCurveEditor(Listing_Standard listing_Standard, ref SimpleCurve curve)
     {
-        float lastx = 0;
+        float lastX = 0;
         for (var num = 0; num < curve.PointsCount; num++)
         {
             var point = curve.Points[num];
@@ -175,28 +158,19 @@ public class IncidentCountMultiplier : Mod
             };
 
             var x = point.x;
-            if (x <= lastx)
+            if (x <= lastX)
             {
-                x = lastx + 1f;
+                x = lastX + 1f;
             }
 
-            //string buffer2 = x.ToString();
             x = Widgets.HorizontalSlider(rect1, x, 0, 5000f, false, "DaysDescription".Translate() + ": " + x, null,
                 null, 1);
-            //listing_Standard.Label("DaysDescription".Translate() + ": " + x);
-            //listing_Standard.Slider(x, 0, 10000f);
-            //Widgets.TextFieldNumeric<float>(rect2, ref y, ref buffer2, min, max);
-
 
             var y = point.y;
             var ypercent = y * 100;
-            //string buffer1 = y.ToString();
             ypercent = Widgets.HorizontalSlider(rect2, ypercent, 0, 10000f, false,
                 "PercentDescription".Translate() + ": " + ypercent + "%", null, null, 1);
-            //listing_Standard.Label("PercentDescription".Translate() + ": " + ypercent + "%");
-            //listing_Standard.Slider(ypercent, 0, 1000f);
             y = ypercent / 100;
-            //Widgets.TextFieldNumeric<float>(rect1, ref x, ref buffer1, min, max);
 
             if (x != point.x || y != point.y)
             {
@@ -212,7 +186,6 @@ public class IncidentCountMultiplier : Mod
 
             if (Widgets.ButtonText(rect4, "-"))
             {
-                //curves.RemovePointNear(point);
                 curve.Points.RemoveAt(num);
                 if (curve.PointsCount == 0)
                 {
@@ -223,7 +196,7 @@ public class IncidentCountMultiplier : Mod
             }
 
             listing_Standard.Gap(listing_Standard.verticalSpacing);
-            lastx = x;
+            lastX = x;
         }
     }
 }

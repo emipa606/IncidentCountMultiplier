@@ -51,7 +51,7 @@ public static class Patches
             stringBuilder.AppendLine();
         }
 
-        if (true)
+        if (Prefs.DevMode)
         {
             Log.Message(stringBuilder.ToString());
         }
@@ -86,7 +86,6 @@ public static class Patches
     {
         // mtb/= と実質一緒
 
-        //checkDuration *= settings.MTBEventOccurs_Multiplier.EvaluateOnCurrentDay();
         if (Multiplier == 0)
         {
             return false;
@@ -100,12 +99,6 @@ public static class Patches
         float minDaysPassed, float onDays, float offDays, float minSpacingDays, float minIncidents,
         float maxIncidents, float acceptFraction = 1f)
     {
-        //minIncidents *= settings.MinIncidentCountMultiplier.EvaluateOnCurrentDay();
-        //maxIncidents *= settings.MaxIncidentCountMultiplier.EvaluateOnCurrentDay();
-        //float IncidentCycleAcceleration = settings.IncidentCycleAcceleration.EvaluateOnCurrentDay();
-        //onDays *= IncidentCycleAcceleration;
-        //offDays *= IncidentCycleAcceleration;
-        //minSpacingDays /= settings.MaxIncidentCountMultiplier.EvaluateOnCurrentDay();
         minIncidents *= Multiplier;
         maxIncidents *= Multiplier;
         if (Multiplier <= 0.5)
