@@ -5,6 +5,7 @@
   <PercentDescription>Prozentsatz des Ausfalls</PercentDescription>
   <DaysDescription>Tag seit Beginn der Kolonie</DaysDescription>
   <IncidentCountMultiplierModVersion>Installierte Mod-Version: {0}</IncidentCountMultiplierModVersion>
-  <IncidentCountMultiplierDescription>Vervielfacht die Häufigkeit von Zufallsereignissen, die von Geschichtenerzählern verursacht werden.
-Die Multiplikatorrate kann so eingestellt werden, dass sie je nach verstrichenen Tagen schwankt.</IncidentCountMultiplierDescription>
+  <!-- <IncidentCountMultiplier_ToolTip>Simple Curve. x is days and y is multiplier.</IncidentCountMultiplier_ToolTip> -->
+  <IncidentCountMultiplierDescription>Multipliziert die Häufigkeit von zufälligen Vorfällen, die von Geschichtenerzählern verursacht werden.
+Der Multiplikator kann so eingestellt werden, dass er je nach verstrichenen Tagen schwankt.</IncidentCountMultiplierDescription>
 </LanguageData>
