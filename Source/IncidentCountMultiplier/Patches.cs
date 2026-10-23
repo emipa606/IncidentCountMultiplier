@@ -42,10 +42,7 @@ public static class Patches
             }
             else
             {
-                stringBuilder.Append(string.Concat([
-                    comp,
-                    " is not patched. Target method is not found."
-                ]));
+                stringBuilder.Append($"{comp} is not patched. Target method is not found.");
             }
 
             stringBuilder.AppendLine();
@@ -114,23 +111,24 @@ public static class Patches
             minSpacingDays, minIncidents, maxIncidents, acceptFraction);
     }
 
-    private static IEnumerable<CodeInstruction> MethodReplacer_MTBEventOccurs(
-        this IEnumerable<CodeInstruction> instructions)
+    extension(IEnumerable<CodeInstruction> instructions)
     {
-        return instructions.MethodReplacer(
-            AccessTools.Method(typeof(Rand), nameof(Rand.MTBEventOccurs)),
-            AccessTools.Method(typeof(Patches), nameof(MTBEventOccurs_Patch))
-        );
-    }
+        private IEnumerable<CodeInstruction> MethodReplacer_MTBEventOccurs()
+        {
+            return instructions.MethodReplacer(
+                AccessTools.Method(typeof(Rand), nameof(Rand.MTBEventOccurs)),
+                AccessTools.Method(typeof(Patches), nameof(MTBEventOccurs_Patch))
+            );
+        }
 
-    private static IEnumerable<CodeInstruction> MethodReplacer_IncidentCountThisInterval(
-        this IEnumerable<CodeInstruction> instructions)
-    {
-        return instructions.MethodReplacer(
-            AccessTools.Method(typeof(IncidentCycleUtility),
-                nameof(IncidentCycleUtility.IncidentCountThisInterval)),
-            AccessTools.Method(typeof(Patches), nameof(IncidentCountThisInterval_Patch))
-        );
+        private IEnumerable<CodeInstruction> MethodReplacer_IncidentCountThisInterval()
+        {
+            return instructions.MethodReplacer(
+                AccessTools.Method(typeof(IncidentCycleUtility),
+                    nameof(IncidentCycleUtility.IncidentCountThisInterval)),
+                AccessTools.Method(typeof(Patches), nameof(IncidentCountThisInterval_Patch))
+            );
+        }
     }
 
     private static float EvaluateOnCurrentDay(this SimpleCurve simpleCurve)

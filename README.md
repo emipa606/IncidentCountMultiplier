@@ -33,4 +33,4 @@ Setting to extreme value(x100 for example) may output error. but it seems to wor
 
  
 
-[![Image](https://img.shields.io/github/v/release/emipa606/IncidentCountMultiplier?label=latest%20version&style=plastic&color=9f1111&labelColor=black)](https://steamcommunity.com/sharedfiles/filedetails/changelog/2042699063) | tags: storyteller,  frequency
+[![Image](https://img.shields.io/github/v/release/emipa606/IncidentCountMultiplier?label=latest%20version&style=plastic&color=9f1111&labelColor=black)](https://steamcommunity.com/sharedfiles/filedetails/changelog/2042699063) | 1.6, Mod, 1.5, 1.2, 1.3, 1.0, 1.4, 1.1

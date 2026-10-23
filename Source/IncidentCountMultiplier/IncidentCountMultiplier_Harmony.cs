@@ -12,6 +12,5 @@ public static class IncidentCountMultiplier_Harmony
     static IncidentCountMultiplier_Harmony()
     {
         harmony = new Harmony("IncidentCountMultiplier");
-        //harmony.PatchAll();
     }
 }
